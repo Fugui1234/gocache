@@ -12,12 +12,12 @@ type MapCache struct {
 	ticker  *time.Ticker
 }
 
-func (mc MapCache) has(k Key) bool {
+func (mc MapCache) has(k string) bool {
 	_, ok := mc.content.Get(k)
 	return ok
 }
 
-func (mc MapCache) Has(k Key) bool {
+func (mc MapCache) Has(k string) bool {
 	if mc.has(k) {
 		return true
 	} else {
@@ -33,10 +33,10 @@ func (mc MapCache) Has(k Key) bool {
 	}
 }
 
-func (mc MapCache) Get(k Key) (Value, bool) {
+func (mc MapCache) Get(k string) (interface{}, bool) {
 	if mc.Has(k) {
-		if tmp, ok := mc.content.Get(k).(Value); ok {
-			return tmp, true
+		if tmp, ok := mc.content.Get(k); ok {
+			return tmp.(interface{}), true
 		} else {
 			return nil, false
 		}
@@ -44,20 +44,20 @@ func (mc MapCache) Get(k Key) (Value, bool) {
 	return nil, false
 }
 
-func (mc MapCache) set(k Key, v Value) {
+func (mc MapCache) set(k string, v interface{}) {
 	mc.content.Set(k, v)
 }
 
-func (mc MapCache) Set(k Key, v Value) {
+func (mc MapCache) Set(k string, v interface{}) {
 	mc.sc.Set(k, v)
 	mc.set(k, v)
 }
 
-func (mc MapCache) Del(k Key) {
+func (mc MapCache) Del(k string) {
 	mc.content.Remove(k)
 }
 
-func NewMapCache(_sc MapCache) {
+func NewMapCache(_sc KVCache) MapCache {
 	return MapCache{
 		sc:      _sc,
 		content: cmap.New(),
